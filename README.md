@@ -127,4 +127,5 @@ teleportar.MouseButton1Click:Connect(function()
 			char.HumanoidRootPart.CFrame = posicaoSalva
 		end
 	end
-end)
+end) 
+
