@@ -1,58 +1,69 @@
--- LocalScript
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
+--// GUI
+local player = game.Players.LocalPlayer
+local mouse = player:GetMouse()
 
-local Replicated = game:GetService("ReplicatedStorage")
-local teleportEvent = Replicated:WaitForChild("TeleportEvent")
+-- Criar botão flutuante
+local button = Instance.new("TextButton")
+button.Parent = player:WaitForChild("PlayerGui"):WaitForChild(script.Parent)
+button.Size = UDim2.new(0, 120, 0, 40)
+button.Position = UDim2.new(0.05, 0, 0.4, 0)
+button.BackgroundColor3 = Color3.fromRGB(0, 100, 255)
+button.Text = "Menu"
+button.TextColor3 = Color3.new(1,1,1)
+button.Active = true
+button.Draggable = true  -- botão flutuante
 
-local posMarcada = nil
+-- Criar painel
+local frame = Instance.new("Frame")
+frame.Parent = button.Parent
+frame.Size = UDim2.new(0, 200, 0, 140)
+frame.Position = UDim2.new(0.2, 0, 0.3, 0)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.Visible = false
 
--- UI --------------------------
-local ScreenGui = Instance.new("ScreenGui", player.PlayerGui)
+-- Botão: Marcar posição
+local marcar = Instance.new("TextButton")
+marcar.Parent = frame
+marcar.Size = UDim2.new(1, -20, 0, 50)
+marcar.Position = UDim2.new(0, 10, 0, 10)
+marcar.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+marcar.TextColor3 = Color3.new(1,1,1)
+marcar.Text = "Marcar posição"
 
-local Botao = Instance.new("TextButton")
-Botao.Text = "+"
-Botao.Size = UDim2.new(0, 50, 0, 50)
-Botao.Position = UDim2.new(0.9, 0, 0.8, 0)
-Botao.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-Botao.TextSize = 30
-Botao.Parent = ScreenGui
-Botao.ZIndex = 10
+-- Botão: Teleportar
+local teleportar = Instance.new("TextButton")
+teleportar.Parent = frame
+teleportar.Size = UDim2.new(1, -20, 0, 50)
+teleportar.Position = UDim2.new(0, 10, 0, 70)
+teleportar.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+teleportar.TextColor3 = Color3.new(1,1,1)
+teleportar.Text = "Teleportar"
 
-local Painel = Instance.new("Frame")
-Painel.Size = UDim2.new(0, 300, 0, 200)
-Painel.Position = UDim2.new(0.65, 0, 0.6, 0)
-Painel.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-Painel.Visible = false
-Painel.Parent = ScreenGui
+-- Variável da posição salva
+local posicaoSalva = nil
 
-local MarcaBtn = Instance.new("TextButton")
-MarcaBtn.Text = "Marcar posição"
-MarcaBtn.Size = UDim2.new(1, -20, 0, 60)
-MarcaBtn.Position = UDim2.new(0, 10, 0, 20)
-MarcaBtn.Parent = Painel
-
-local TeleportBtn = Instance.new("TextButton")
-TeleportBtn.Text = "Teleportar"
-TeleportBtn.Size = UDim2.new(1, -20, 0, 60)
-TeleportBtn.Position = UDim2.new(0, 10, 0, 100)
-TeleportBtn.Parent = Painel
-
------------------------------------------
-
-Botao.MouseButton1Click:Connect(function()
-	Painel.Visible = not Painel.Visible
+-- Abrir painel
+button.MouseButton1Click:Connect(function()
+	frame.Visible = not frame.Visible
 end)
 
-MarcaBtn.MouseButton1Click:Connect(function()
+-- Marcar posição
+marcar.MouseButton1Click:Connect(function()
 	local char = player.Character
-	if char and char.PrimaryPart then
-		posMarcada = char.PrimaryPart.CFrame
+	if char and char:FindFirstChild("HumanoidRootPart") then
+		posicaoSalva = char.HumanoidRootPart.CFrame
+		marcar.Text = "Posição marcada!"
+		task.wait(1)
+		marcar.Text = "Marcar posição"
 	end
 end)
 
-TeleportBtn.MouseButton1Click:Connect(function()
-	if posMarcada then
-		teleportEvent:FireServer(posMarcada)
+-- Teleportar sem voltar ao lugar antigo
+teleportar.MouseButton1Click:Connect(function()
+	if posicaoSalva then
+		local char = player.Character
+		if char and char:FindFirstChild("HumanoidRootPart") then
+			char.HumanoidRootPart.CFrame = posicaoSalva
+		end
 	end
 end)
